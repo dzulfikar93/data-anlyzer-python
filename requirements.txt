@@ -1,0 +1,6 @@
+langchain_experimental==0.3.4
+langchain_openai==0.3.3
+pandas==2.2.3
+pygwalker==0.4.9.13
+python-dotenv==1.0.1
+streamlit==1.41.1
