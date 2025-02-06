@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 import pygwalker as pyg
 from pygwalker.api.streamlit import StreamlitRenderer
+import matplotlib.pyplot as plt
     
 # CONSTANT
 # Adding prefic and suffix
@@ -66,24 +67,72 @@ def agent_csv(df_csv):
         )
     return agent
 
+# Create horizontal bar chart
+def h_bar_chart (df) :
+    data_count = df.value_counts()
+    
+    #Turn data into list
+    names = list(data_count.index)
+    counts = list(data_count.values)
+    
+    fig, ax = plt.subplots()
+    ax.barh(names, counts, color="skyblue", edgecolor="black")
+
+    ax.set_title("Histogram of Variable")
+    ax.set_xlabel('Frequency')
+    ax.set_ylabel("Variable")
+
+    return [fig,ax]
+
+
 
 def main():
     # Streamlit UI
+    st.set_page_config(layout="wide")
     st.title("📊 CSV Query Agent AI")
-    st.subheader("By : Dzulfikar S")
+    st.caption("By : Dzulfikar S")
 
     # Sidebar dropdown menu
-    option = st.sidebar.selectbox("Choose Mode:", ["Chat With Data", "Data Visualization"])
+    with st.sidebar: # Create hideable sidebar
+        option = st.sidebar.selectbox("Choose Mode:", ["Chat With Data", "Data Visualization"])
+        st.caption ("**Chat With Data** : Let you interact or chat with data powered by AI")
+        st.caption ("**Data Visualization** : To visualize data using interactive tab")
+
+        # Handle Setting or custom delimiter
+        delimiter_options = {
+            "Comma (,)": ",",
+            "Tab (\\t)": "\t",
+            "Semicolon (;)": ";",
+            "Pipe (|)": "|",
+            "Space ( )": " ",
+            "Custom": None  # User-defined delimiter
+        }
+        delimiter_choice = st.selectbox("Setting Delimiter CSV", list(delimiter_options.keys()))
+        # If user selects custom, allow text input
+        if delimiter_choice == "Custom":
+            custom_delimiter = st.text_input("Enter custom delimiter", value=",")
+            delimiter = custom_delimiter
+        else:
+            delimiter = delimiter_options[delimiter_choice]   
+                    
+
+
+        st.divider()
+
+        st.caption("Develop by Dzulfikar Shubhy")
 
     # File uploader for CSV
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     # Load CSV
-    df = load_csv(uploaded_file)
+    try:
+        df = pd.read_csv(uploaded_file, sep=delimiter, engine="python")
+    except Exception as e:
+        st.error(f"Error reading file: {e}")
 
     # Display the DataFrame preview
     if uploaded_file :
     # Question input
-        st.write('##DATA PREVIEW : ')
+        st.write('🖹 **DATA PREVIEW** : ')
         st.dataframe(df.head())
         if option == "Chat With Data" :
             st.subheader("🤖 Chat with Your CSV Data")
@@ -99,9 +148,13 @@ def main():
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
         elif option == "Data Visualization":
-            st.subheader("📊 Explore Data with PyGWalker")
+            st.subheader("📊 Data Visualization")
+            
             pyg_app = StreamlitRenderer(df)
             pyg_app.explorer()
+        
+
+
     else:
         st.warning("Please upload a CSV file")
 
