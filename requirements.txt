@@ -1,6 +1,8 @@
 langchain_experimental==0.3.4
-langchain_openai==0.3.3
+langchain_openai==0.3.7
+matplotlib==3.10.1
 pandas==2.2.3
-pygwalker==0.4.9.13
+pygwalker==0.4.9.14
 python-dotenv==1.0.1
+Requests==2.32.3
 streamlit==1.41.1
