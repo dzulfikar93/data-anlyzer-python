@@ -135,7 +135,7 @@ def itenasis_mode():
 def main():
     # Streamlit UI
     st.set_page_config(layout="wide")
-    st.title("📊 Intelligent Document Analysis & CSV Query AI Agent")
+    st.title("🚀 Intelligent Document Analysis & CSV Query AI Agent 🤖")
     st.caption("By : Dzulfikar S")
 
     # Sidebar dropdown menu
