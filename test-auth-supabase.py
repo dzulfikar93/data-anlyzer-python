@@ -1,9 +1,11 @@
 import streamlit as st
 from supabase import create_client, Client
+import os
+from dotenv import load_dotenv
 
 # Replace these with your Supabase credentials
 SUPABASE_URL = "https://zrdnqtdqfjueogbznbne.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyZG5xdGRxZmp1ZW9nYnpuYm5lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTY4MzY1OCwiZXhwIjoyMDU1MjU5NjU4fQ.OTxhK_eks3X8qFlMqThR7YGS_o1YivroBwqq7-IDWCU"
+SUPABASE_KEY = os.getenv("BEARER_TOKEN")
 
 # Initialize the Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
