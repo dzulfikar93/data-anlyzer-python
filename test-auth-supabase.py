@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 # Replace these with your Supabase credentials
 SUPABASE_URL = "https://zrdnqtdqfjueogbznbne.supabase.co"
-SUPABASE_KEY = os.getenv("BEARER_TOKEN")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 # Initialize the Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
