@@ -6,3 +6,4 @@ pygwalker==0.4.9.14
 python-dotenv==1.0.1
 Requests==2.32.3
 streamlit==1.41.1
+supabase

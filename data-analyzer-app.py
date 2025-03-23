@@ -17,7 +17,7 @@ WEBHOOK_URL = "https://dzulfikar.app.n8n.cloud/webhook/d1c42c7d-76cb-4a39-96d5-b
 BEARER_TOKEN = os.getenv("BEARER_TOKEN")
 
 # Supabase client initialization
-url = "https://zrdnqtdqfjueogbznbne.supabase.co"  # Replace with your Supabase URL
+url = os.getenv("SUPABASE_URL")  # Replace with your Supabase URL
 key = os.getenv("SUPABASE_KEY") # Replace with your Supabase API key
 supabase: Client = create_client(url, key)
 
