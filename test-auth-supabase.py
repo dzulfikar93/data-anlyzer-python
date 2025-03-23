@@ -51,6 +51,41 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 #     if st.button("Logout"):
 #         supabase.auth.sign_out()
 #         st.success("You have logged out successfully!")
+def sign_in(email, password):
+    try:
+        user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        if user.user:
+            st.session_state.user = user.user
+            st.success("Sign in successful!")
+            st.write(f"Welcome, {st.session_state.user.email}!")
+            if st.button("Sign out"):
+                sign_out()
+        else:
+            st.error("Sign in failed.")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+
+
+@st.dialog("Login To Continue")
+def login_dialog():
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        sign_in(email, password)
+
+
+def auth_form():
+    auth_type = st.radio("Choose authentication type", ["Sign up", "Sign in"])
+
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Submit"):
+        if auth_type == "Sign up":
+            sign_up(email, password)
+        else:
+            sign_in(email, password)
 
 
 
@@ -70,17 +105,6 @@ def main():
         # Authentication forms
         auth_form()
 
-def auth_form():
-    auth_type = st.radio("Choose authentication type", ["Sign up", "Sign in"])
-
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Submit"):
-        if auth_type == "Sign up":
-            sign_up(email, password)
-        else:
-            sign_in(email, password)
 
 def sign_up(email, password):
     try:
@@ -93,22 +117,14 @@ def sign_up(email, password):
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
-def sign_in(email, password):
-    try:
-        user = supabase.auth.sign_in_with_password({"email": email, "password": password})
-        if user.user:
-            st.session_state.user = user.user
-            st.success("Sign in successful!")
-        else:
-            st.error("Sign in failed.")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+
 
 def sign_out():
     try:
         supabase.auth.sign_out()
         st.session_state.user = None
         st.success("Signed out successfully!")
+        auth_form()
     except Exception as e:
         st.error(f"An error occurred: {e}")
 

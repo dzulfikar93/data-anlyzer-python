@@ -10,10 +10,16 @@ from pygwalker.api.streamlit import StreamlitRenderer
 import matplotlib.pyplot as plt
 import requests
 import uuid
+from supabase import create_client, Client
     
 # CONSTANT
 WEBHOOK_URL = "https://dzulfikar.app.n8n.cloud/webhook/d1c42c7d-76cb-4a39-96d5-bef2b4d0cbdf" #os.getenv("WEBHOOK_URL")
 BEARER_TOKEN = os.getenv("BEARER_TOKEN")
+
+# Supabase client initialization
+url = "https://zrdnqtdqfjueogbznbne.supabase.co"  # Replace with your Supabase URL
+key = os.getenv("SUPABASE_KEY") # Replace with your Supabase API key
+supabase: Client = create_client(url, key)
 
 # Adding prefic and suffix
 
@@ -131,8 +137,30 @@ def itenasis_mode():
             with st.chat_message("assistant"):
                 st.write(llm_response)
 
+# Function to create login form
+def create_login_form():
+    st.title("Login to ITENASIS 🤖 ")
+    email = st.text_input("Email", "")
+    password = st.text_input("Password", "", type="password")
+    
+    if st.button("Login"):
+        if email and password:
+            try :
+                user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                if user:
+                    st.session_state.user = user.user
+                    st.session_state['logged_in'] = True
+                    st.success("Logged in successfully!")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials")
+            except Exception as e:
+                st.error("Invalid credentials")
+        else:
+            st.warning("Please enter both email and password")
 
-def main():
+# Show main content
+def main_content():
     # Streamlit UI
     st.set_page_config(layout="wide")
     st.title("🚀 Intelligent Document Analysis & CSV Query AI Agent 🤖")
@@ -140,10 +168,11 @@ def main():
 
     # Sidebar dropdown menu
     with st.sidebar: # Create hideable sidebar
-        option = st.sidebar.selectbox("Choose Mode:", ["Chat With Data", "Data Visualization", "Intelligent Document Analysis"])
+        option = st.sidebar.selectbox("Choose Mode:", ["Intelligent Document Analysis","Chat With Data", "Data Visualization"])
+        st.caption("**Intelligent Documen Analysis** : Let you interact or chat about Embedded document")
         st.caption ("**Chat With Data** : Let you interact or chat with data powered by AI")
         st.caption ("**Data Visualization** : To visualize data using interactive tab")
-        st.caption("**Intelligent Documen Analysis** : Let you interact or chat about Embedded document")
+
 
         # Handle Setting or custom delimiter
         delimiter_options = {
@@ -162,7 +191,14 @@ def main():
         else:
             delimiter = delimiter_options[delimiter_choice]   
         st.divider()
+        # Show session user
+        st.caption(f"👨‍💻 Login as :  {st.session_state.user.email}")
+        
+        st.divider()        
         st.caption("Develop by Dzulfikar Shubhy")
+
+
+
 
     if option == "Intelligent Document Analysis" :
         # st.write("ITENASIS MODE")
@@ -227,6 +263,13 @@ def main():
 
         else:
             st.warning("Please upload a CSV file")
+
+
+def main():
+    if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
+        create_login_form()
+    else:
+        main_content()
 
 if __name__ == "__main__":
     main()
