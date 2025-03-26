@@ -139,7 +139,7 @@ def itenasis_mode():
 
 # Function to create login form
 def create_login_form():
-    st.title("Login to ITENASIS 🤖 ")
+    st.title("Login to Le-Velocity ITENASIS 🤖 ")
     email = st.text_input("Email", "")
     password = st.text_input("Password", "", type="password")
     
