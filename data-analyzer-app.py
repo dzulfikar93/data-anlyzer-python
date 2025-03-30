@@ -179,12 +179,13 @@ def query_analysis_mode():
         st.session_state.messages.append({"role": "user", "content": user_input_2})
         with st.chat_message("user"):
             st.write(user_input_2)
-        llm_response = send_message_to_llm_2(st.session_state.session_id, user_input_2)
+        with st.spinner("Processing your question...") :
+            llm_response = send_message_to_llm_2(st.session_state.session_id, user_input_2)
 
-        # Add LLM response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": llm_response})
-        with st.chat_message("assistant"):
-            st.write(llm_response)                
+            # Add LLM response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": llm_response})
+            with st.chat_message("assistant"):
+                st.write(llm_response)                
 
 # Function to create login form
 def create_login_form():
