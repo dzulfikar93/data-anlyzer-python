@@ -130,7 +130,7 @@ def send_message_to_llm_2(session_id, message):
 
 def itenasis_mode():
     # Initialize session state
-    st.caption("Intelligent Document Analysis")
+    st.write("**MODE :** 📖 Intelligent Document Analysis")
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "session_id" not in st.session_state:
@@ -160,29 +160,35 @@ def itenasis_mode():
 
 def query_analysis_mode():
     # Initialize session state
-    st.caption("QUERY ANALYSIS")
+    st.write("**MODE :** 📈 QUERY ANALYSIS")
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "session_id" not in st.session_state:
         st.session_state.session_id = generate_session_id()
-    # User input
-    user_input = st.chat_input("Type your message here...")
+    
+    # Display chat messages
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
 
-    if user_input:
+    # User input
+    user_input_2 = st.chat_input("Type your message here...")
+
+    if user_input_2:
         # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": user_input})
+        st.session_state.messages.append({"role": "user", "content": user_input_2})
         with st.chat_message("user"):
-            st.write(user_input)
-        llm_response_2 = send_message_to_llm_2(st.session_state.session_id, user_input)
+            st.write(user_input_2)
+        llm_response = send_message_to_llm_2(st.session_state.session_id, user_input_2)
 
         # Add LLM response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": llm_response_2})
+        st.session_state.messages.append({"role": "assistant", "content": llm_response})
         with st.chat_message("assistant"):
-            st.write(llm_response_2)                
+            st.write(llm_response)                
 
 # Function to create login form
 def create_login_form():
-    st.title("Login to Le-Velocity ITENASIS 🤖 ")
+    st.title("Login to La-Velocity ITENASIS 🤖 ")
     email = st.text_input("Email", "")
     password = st.text_input("Password", "", type="password")
     
@@ -207,7 +213,6 @@ def main_content():
     # Streamlit UI
     st.set_page_config(layout="wide")
     st.title("La-VELOCITY - Lampung Virtual Assistant PLN for Document Analytic 🤖")
-    st.caption("By : Dzulfikar S")
 
     # Sidebar dropdown menu
     with st.sidebar: # Create hideable sidebar
@@ -245,10 +250,11 @@ def main_content():
 
 
     if option == "Intelligent Document Analysis" :
-        # st.write("ITENASIS MODE")
+        # st.write(st.session_state)
         itenasis_mode()
 
     elif option == "Data Query Analysis":
+        # st.write(st.session_state)
         query_analysis_mode()
 
 
