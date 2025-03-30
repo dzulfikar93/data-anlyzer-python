@@ -16,6 +16,9 @@ from supabase import create_client, Client
 WEBHOOK_URL = "https://dzulfikar.app.n8n.cloud/webhook/d1c42c7d-76cb-4a39-96d5-bef2b4d0cbdf" #os.getenv("WEBHOOK_URL")
 BEARER_TOKEN = os.getenv("BEARER_TOKEN")
 
+WEBHOOK_URL2 = "https://dzulfikar.app.n8n.cloud/webhook/9eadd9ce-aae3-4d27-b43e-2165b40c6717"
+BEARER_TOKEN2 = os.getenv("BEARER_TOKEN2")
+
 # Supabase client initialization
 url = os.getenv("SUPABASE_URL")  # Replace with your Supabase URL
 key = os.getenv("SUPABASE_KEY") # Replace with your Supabase API key
@@ -108,8 +111,26 @@ def send_message_to_llm(session_id, message):
         return response.json()["output"]
     else:
         return f"Error: {response.status_code} - {response.text}"
+
+def send_message_to_llm_2(session_id, message):
+    headers = {
+        "Authorization": f"Bearer {BEARER_TOKEN2}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "sessionId": session_id,
+        "chatInput": message
+    }
+    response = requests.post(WEBHOOK_URL2, json=payload, headers=headers)
+    if response.status_code == 200:
+        return response.json()["output"]
+    else:
+        return f"Error: {response.status_code} - {response.text}"    
+
+
 def itenasis_mode():
     # Initialize session state
+    st.caption("Intelligent Document Analysis")
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "session_id" not in st.session_state:
@@ -137,6 +158,28 @@ def itenasis_mode():
             with st.chat_message("assistant"):
                 st.write(llm_response)
 
+def query_analysis_mode():
+    # Initialize session state
+    st.caption("QUERY ANALYSIS")
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = generate_session_id()
+    # User input
+    user_input = st.chat_input("Type your message here...")
+
+    if user_input:
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.write(user_input)
+        llm_response_2 = send_message_to_llm_2(st.session_state.session_id, user_input)
+
+        # Add LLM response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": llm_response_2})
+        with st.chat_message("assistant"):
+            st.write(llm_response_2)                
+
 # Function to create login form
 def create_login_form():
     st.title("Login to Le-Velocity ITENASIS 🤖 ")
@@ -163,13 +206,14 @@ def create_login_form():
 def main_content():
     # Streamlit UI
     st.set_page_config(layout="wide")
-    st.title("🚀 Intelligent Document Analysis & CSV Query AI Agent 🤖")
+    st.title("La-VELOCITY - Lampung Virtual Assistant PLN for Document Analytic 🤖")
     st.caption("By : Dzulfikar S")
 
     # Sidebar dropdown menu
     with st.sidebar: # Create hideable sidebar
-        option = st.sidebar.selectbox("Choose Mode:", ["Intelligent Document Analysis","Chat With Data", "Data Visualization"])
-        st.caption("**Intelligent Documen Analysis** : Let you interact or chat about Embedded document")
+        option = st.sidebar.selectbox("Choose Mode:", ["Intelligent Document Analysis","Data Query Analysis","Chat With Data", "Data Visualization"])
+        st.caption("**Intelligent Documen Analysis** : Let you interact or chat about Document like BPM, IK, PR, SOP, etc")
+        st.caption ("**Data Query Analysis** : Let you interact or with Tabular Data that require perform Query")
         st.caption ("**Chat With Data** : Let you interact or chat with data powered by AI")
         st.caption ("**Data Visualization** : To visualize data using interactive tab")
 
@@ -203,6 +247,11 @@ def main_content():
     if option == "Intelligent Document Analysis" :
         # st.write("ITENASIS MODE")
         itenasis_mode()
+
+    elif option == "Data Query Analysis":
+        query_analysis_mode()
+
+
     else:
         # File uploader for CSV
         uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
